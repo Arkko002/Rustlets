@@ -1,5 +1,8 @@
-pub mod pulse_dbus;
+mod pulse_dbus;
+
+use crate::pulse_dbus::PulesDbusClient;
 
 fn main() {
-    let conn = pulse_dbus::start_dbus_client().unwrap();
+    let conn = PulesDbusClient::new().unwrap();
+    conn.get_sinks().unwrap();
 }

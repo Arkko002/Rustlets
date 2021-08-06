@@ -1,6 +1,6 @@
-use std::{os::unix::net::UnixStream, time::Duration};
+use std::os::unix::net::UnixStream;
 
-use zbus::{Connection, Error, Proxy};
+use zbus::{export::zvariant::ObjectPath, Connection, Error, Proxy};
 
 //#[dbus_proxy]
 //trait Address {
@@ -10,7 +10,7 @@ use zbus::{Connection, Error, Proxy};
 //) -> zbus::Result<u32>;
 //}
 
-struct PulesDbusClient {
+pub struct PulesDbusClient {
     conn: Connection,
 }
 
@@ -19,9 +19,9 @@ impl PulesDbusClient {
         let adr: String = PulesDbusClient::get_server_address()?;
 
         let soc_stream = UnixStream::connect(adr)?;
-        Ok(Self {
-            conn: Connection::new_unix_client(soc_stream, false)?,
-        })
+        let conn = Connection::new_unix_client(soc_stream, false)?;
+
+        Ok(Self { conn })
     }
 
     fn get_server_address() -> Result<String, Box<dyn std::error::Error>> {
@@ -45,5 +45,29 @@ impl PulesDbusClient {
         }
     }
 
-    pub fn get_sinks(&self) {}
+    pub fn get_sinks(&self) -> Result<Vec<ObjectPath>, Box<dyn std::error::Error>> {
+        // TODO Move to struct field
+        let core_proxy = Proxy::new(
+            &self.conn,
+            "org.PulseAudio1",
+            "/org/pulseaudio/server_lookup1",
+            "org.PulseAudio.ServerLookup1",
+        )?;
+        let sinks: Vec<ObjectPath> = core_proxy.get_property("Sinks")?;
+
+        Ok(sinks)
+    }
+
+    pub fn get_sources(&self) -> Result<Vec<ObjectPath>, Box<dyn std::error::Error>> {
+        // TODO Move to struct field
+        let core_proxy = Proxy::new(
+            &self.conn,
+            "org.PulseAudio1",
+            "/org/pulseaudio/server_lookup1",
+            "org.PulseAudio.ServerLookup1",
+        )?;
+        let sinks: Vec<ObjectPath> = core_proxy.get_property("Sources")?;
+
+        Ok(sinks)
+    }
 }
