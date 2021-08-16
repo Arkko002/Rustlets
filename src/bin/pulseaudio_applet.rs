@@ -57,14 +57,25 @@ impl<'a> Widget for Win<'a> {
     fn view(relm: &Relm<Self>, model: Self::Model) -> Self {
         let window = Window::new(WindowType::Toplevel);
         let notebook = gtk::Notebook::new();
-        let sink_btn = gtk::Button::new();
-        let source_btn = gtk::Button::new();
 
-        sink_btn.set_label("Sinks");
-        source_btn.set_label("Sources");
+        let sink_list = gtk::ListBox::new();
+        for ele in &model.client.sinks {
+            let btn = gtk::Button::new();
+            btn.set_label(&ele.name);
+            sink_list.add(&btn);
+        }
 
-        notebook.add(&sink_btn);
-        notebook.add(&source_btn);
+        let source_list = gtk::ListBox::new();
+        for ele in &model.client.sources {
+            let btn = gtk::Button::new();
+            btn.set_label(&ele.name);
+            source_list.add(&btn);
+        }
+
+        notebook.add(&sink_list);
+        notebook.add(&source_list);
+        notebook.set_tab_label(&sink_list, Some(&gtk::Label::new(Some("Sinks"))));
+        notebook.set_tab_label(&source_list, Some(&gtk::Label::new(Some("Sources"))));
 
         window.add(&notebook);
 

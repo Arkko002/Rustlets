@@ -9,16 +9,16 @@ pub struct PulesDbusClient<'a> {
 
 pub struct Sink<'a> {
     path: ObjectPath<'a>,
-    name: String,
-    volume: Vec<u32>,
-    mute: bool,
+    pub name: String,
+    pub volume: Vec<u32>,
+    pub mute: bool,
 }
 
 pub struct Source<'a> {
     path: ObjectPath<'a>,
-    name: String,
-    volume: Vec<u32>,
-    mute: bool,
+    pub name: String,
+    pub volume: Vec<u32>,
+    pub mute: bool,
 }
 
 impl<'a> PulesDbusClient<'a> {
